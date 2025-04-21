@@ -1,0 +1,19 @@
+.banner {
+    background-image: url("https://images.pexels.com/photos/161449/medical-tablets-pills-drug-161449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 100%;
+    height: 90vh;
+    position: relative;
+  }
+  
+  .cover {
+    position: absolute;
+    width: 100%;
+    height: 90vh;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    z-index: 1;
+  }
+  

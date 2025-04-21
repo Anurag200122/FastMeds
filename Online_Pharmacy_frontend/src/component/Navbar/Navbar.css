@@ -1,0 +1,126 @@
+.navbar-container {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(to right, #0d9488, #2563eb);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.logo-text {
+  font-weight: 700;
+  color: white;
+  font-size: 1.5rem;
+  transition: color 0.2s ease;
+}
+
+.logo-text:hover {
+  color: #e5e7eb;
+}
+
+.actions-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-container {
+  position: relative;
+  margin-right: 1rem;
+}
+
+.avatar-container, .cart-container {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .actions-section {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .search-container {
+    width: 100%;
+    margin-right: 0;
+  }
+  .navbar-container {
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(to right, #0d9488, #2563eb);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      cursor: pointer;
+    }
+    
+    .logo-text {
+      font-weight: 700;
+      color: white;
+      font-size: 1.5rem;
+      transition: color 0.2s ease;
+    }
+    
+    .logo-text:hover {
+      color: #e5e7eb;
+    }
+    
+    .actions-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .search-container {
+      position: relative;
+      margin-right: 1rem;
+    }
+    
+    .avatar-container, .cart-container {
+      display: flex;
+      align-items: center;
+    }
+    
+    @media (max-width: 768px) {
+      .navbar-container {
+        padding: 0.75rem 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .actions-section {
+        width: 100%;
+        justify-content: space-between;
+      }
+      
+      .search-container {
+        width: 100%;
+        margin-right: 0;
+      }
+    }
+}

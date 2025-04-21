@@ -1,0 +1,126 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f4f8;
+}
+
+.medicine-theme {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin-right: 2rem;
+}
+
+.capsule {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 200px;
+    background: linear-gradient(to bottom, #4a90e2, #6a5acd);
+    border-radius: 50px;
+    overflow: hidden;
+}
+
+.capsule-top,
+.capsule-bottom {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: #4a90e2;
+    border-radius: 50%;
+}
+
+.capsule-top {
+    top: 0;
+}
+
+.capsule-bottom {
+    bottom: 0;
+}
+
+.glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+    border-radius: 50%;
+}
+
+.liquid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    animation: float 3s infinite ease-in-out;
+}
+
+.bubble--1 {
+    width: 20px;
+    height: 20px;
+    top: 10%;
+    left: 20%;
+}
+
+.bubble--2 {
+    width: 15px;
+    height: 15px;
+    top: 40%;
+    left: 60%;
+    animation-delay: 1s;
+}
+
+.bubble--3 {
+    width: 10px;
+    height: 10px;
+    top: 70%;
+    left: 30%;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.login-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+.login-input {
+    margin-bottom: 1rem;
+}
+
+.login-button {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.login-button:hover {
+    background-color: #357abd;
+}

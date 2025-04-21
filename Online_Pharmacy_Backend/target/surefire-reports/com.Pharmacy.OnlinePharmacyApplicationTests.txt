@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.Pharmacy.OnlinePharmacyApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.329 s -- in com.Pharmacy.OnlinePharmacyApplicationTests

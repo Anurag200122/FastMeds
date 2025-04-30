@@ -81,12 +81,12 @@ export const searchMenuItem = ({ keyword, jwt }) => {
     };
 };
 
-export const updateMenuItemAvailability = ({ medicineId, jwt, availability }) => {
+export const updateMedicineAvailability = ({ id, jwt }) => {
     return async (dispatch) => {
         dispatch({ type: UPDATE_MENU_ITEM_AVAILABILITY_REQUEST });
         try {
             const { data } = await api.put(
-                `/api/admin/medicine/${medicineId}`,
+                `/api/medicine/${id}/availability`,
                 {},
                 {
                     headers: {
@@ -94,7 +94,7 @@ export const updateMenuItemAvailability = ({ medicineId, jwt, availability }) =>
                     },
                 }
             );
-            console.log("update menu item by pharmacy", data);
+            console.log("update medicine availability", data);
             dispatch({ type: UPDATE_MENU_ITEM_AVAILABILITY_SUCCESS, payload: data });
         } catch (error) {
             console.log("catch error", error);

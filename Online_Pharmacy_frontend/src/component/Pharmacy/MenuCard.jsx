@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Card,
   CardMedia,
@@ -94,23 +94,22 @@ const ExpandButton = styled(IconButton)(({ theme, expanded }) => ({
   zIndex: 2
 }));
 
-// Fix for dosage options - adjusting to fit content better
 const DosageOption = styled(FormControlLabel)(({ theme, selected }) => ({
   margin: '4px',
   borderRadius: '8px',
   backgroundColor: selected ? theme.palette.primary.light : 'white',
   border: `1px solid ${selected ? theme.palette.primary.main : '#e0e0e0'}`,
   transition: 'all 0.2s ease',
-  padding: '0 8px',  // Added padding
-  width: 'fit-content', // Make it fit the content
-  minWidth: '120px', // Set a minimum width
-  flexGrow: 0, // Don't let it grow
+  padding: '0 8px',
+  width: 'fit-content',
+  minWidth: '120px',
+  flexGrow: 0,
   '&:hover': {
     backgroundColor: selected ? theme.palette.primary.light : '#f5f5f5'
   },
   '& .MuiFormControlLabel-label': {
     fontSize: '0.875rem',
-    whiteSpace: 'nowrap', // Prevent wrapping
+    whiteSpace: 'nowrap',
     overflow: 'hidden',
     textOverflow: 'ellipsis'
   }
@@ -144,7 +143,9 @@ const MenuCard = ({ item = {}, onClick }) => {
   const [snack, setSnack] = useState({ open: false, message: '', severity: 'success' });
   const dispatch = useDispatch();
 
-  const isAnyDosageInStock = item.dossage?.some(dossage => dossage?.inStoke);
+  // Only show available dosages
+  const availableDosages = item.dossage?.filter(dosage => dosage?.inStoke) || [];
+  const isAnyDosageInStock = availableDosages.length > 0 && item.available;
 
   const handleCheckBoxChange = (itemName) => {
     if (selectedDossage.includes(itemName)) {
@@ -199,14 +200,14 @@ const MenuCard = ({ item = {}, onClick }) => {
     }
   };
 
+  if (!item.available) return null;
+
   return (
     <>
       <CardWrapper>
         <ProductCard expanded={expanded}>
-          {/* Price Tag */}
           <PriceTag variant="body2">${item.price || '0.00'}</PriceTag>
           
-          {/* Main card content */}
           <div>
             {!isAnyDosageInStock && (
               <div
@@ -236,7 +237,6 @@ const MenuCard = ({ item = {}, onClick }) => {
               badgeContent={!isAnyDosageInStock ? "OUT OF STOCK" : null}
               color="error"
             >
-              {/* Fixed image prop handling */}
               <ProductImage
                 image={typeof item?.images === 'string' ? item.images : (item?.images?.[0] || '/placeholder-medicine.jpg')}
                 title={item.name}
@@ -312,7 +312,6 @@ const MenuCard = ({ item = {}, onClick }) => {
             </ActionsContainer>
           </div>
           
-          {/* Expand button in the middle of the card */}
           <ExpandButton
             onClick={handleExpandClick}
             aria-expanded={expanded}
@@ -328,17 +327,15 @@ const MenuCard = ({ item = {}, onClick }) => {
             />
           </ExpandButton>
           
-          {/* Expanded content */}
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <ExpandedContent>
               <form onSubmit={handleAddItemToCart}>
-                {item?.dossage && item.dossage?.length > 0 ? (
+                {availableDosages.length > 0 ? (
                   <div>
                     <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
                       Choose Dosage:
                     </Typography>
                     
-                    {/* Improved dosage layout */}
                     <FormGroup sx={{ 
                       display: 'flex', 
                       flexDirection: 'row', 
@@ -346,14 +343,13 @@ const MenuCard = ({ item = {}, onClick }) => {
                       justifyContent: 'flex-start',
                       gap: '8px'
                     }}>
-                      {item.dossage?.map((dosageItem) => (
+                      {availableDosages.map((dosageItem) => (
                         <DosageOption
                           key={dosageItem.id}
                           control={
                             <Checkbox
                               size="small"
                               onChange={() => handleCheckBoxChange(dosageItem.name)}
-                              disabled={!dosageItem.inStoke}
                               checked={selectedDossage.includes(dosageItem.name)}
                               sx={{ marginRight: 0.5 }}
                             />
@@ -366,22 +362,17 @@ const MenuCard = ({ item = {}, onClick }) => {
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap'
                             }}>
-                              {dosageItem.name} {!dosageItem.inStoke ? ' (Out of Stock)' : ''}
+                              {dosageItem.name}
                             </span>
                           }
                           selected={selectedDossage.includes(dosageItem.name)}
-                          disabled={!dosageItem.inStoke}
-                          sx={{ 
-                            opacity: dosageItem.inStoke ? 1 : 0.6,
-                            textDecoration: dosageItem.inStoke ? 'none' : 'line-through',
-                          }}
                         />
                       ))}
                     </FormGroup>
                   </div>
                 ) : (
                   <Typography variant="body2" color="textSecondary">
-                    No dosage options available
+                    No available dosage options
                   </Typography>
                 )}
                 
@@ -407,7 +398,6 @@ const MenuCard = ({ item = {}, onClick }) => {
         </ProductCard>
       </CardWrapper>
 
-      {/* Snackbar */}
       <Snackbar
         open={snack.open}
         autoHideDuration={4000}

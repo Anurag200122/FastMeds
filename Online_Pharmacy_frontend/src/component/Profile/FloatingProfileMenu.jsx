@@ -24,8 +24,6 @@ const FloatingProfileMenu = () => {
     { title: "Orders", icon: <ShoppingBag />, path: "/my-profile/orders" },
     { title: "Favourites", icon: <Favorite />, path: "/my-profile/favourites" },
     { title: "Address", icon: <Home />, path: "/my-profile/address" },
-    { title: "Payments", icon: <AccountBalanceWallet />, path: "/my-profile/payments" },
-    { title: "Events", icon: <Event />, path: "/my-profile/events" },
     { 
       title: "Logout", 
       icon: <Logout />, 

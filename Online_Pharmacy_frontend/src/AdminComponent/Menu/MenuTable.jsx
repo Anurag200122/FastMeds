@@ -1,13 +1,15 @@
-import { Box, Card, CardHeader, TableCell, TableBody, TableRow, Table, TableHead, Paper, TableContainer, IconButton, Avatar, Chip, Typography, Snackbar, Alert, CircularProgress } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Card, CardHeader, TableCell, TableBody, TableRow, Table, TableHead, Paper, TableContainer, IconButton, Avatar, Chip, Typography, Snackbar, Alert, CircularProgress, Button } from "@mui/material";
+import React, { useState, useEffect } from "react";
 import CreateIcon from '@mui/icons-material/Create';
 import { Delete } from "@mui/icons-material";
+import ToggleOnIcon from '@mui/icons-material/ToggleOn';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getMenuItemsByPharmacyId } from "../../component/State/Menu/Action";
-import { useEffect } from "react";
-import { deleteMenuItem } from "../../component/State/Menu/Action";
+import { deleteMenuItem, updateMedicineAvailability } from "../../component/State/Menu/Action";
 
+// Helper function to determine stock status based on dossages
 const getStockStatus = (dossages) => {
   if (!dossages || dossages.length === 0) return { label: "Unknown", color: "default" };
   
@@ -29,6 +31,8 @@ export const MenuTable = () => {
     severity: "success"
   });
   const [deletingId, setDeletingId] = useState(null);
+  const [updatingId, setUpdatingId] = useState(null);
+  const [medicineAvailability, setMedicineAvailability] = useState({});
 
   useEffect(() => {
     if (pharmacy.usersPharmacy?.id && jwt) {
@@ -41,6 +45,18 @@ export const MenuTable = () => {
       }));
     }
   }, [dispatch, jwt, pharmacy.usersPharmacy?.id]);
+  
+  // Update the availability state whenever menu items change
+  useEffect(() => {
+    if (menu.menuItems) {
+      const availabilityMap = {};
+      menu.menuItems.forEach(item => {
+        // Use the 'available' property from the API response
+        availabilityMap[item.id] = item.available;
+      });
+      setMedicineAvailability(availabilityMap);
+    }
+  }, [menu.menuItems]);
 
   const handleDeleteMedicine = (medicineId, medicineName) => {
     setDeletingId(medicineId);
@@ -69,6 +85,52 @@ export const MenuTable = () => {
       })
       .finally(() => {
         setDeletingId(null);
+      });
+  };
+
+  const handleToggleAvailability = (medicineId, medicineName, currentStatus) => {
+    setUpdatingId(medicineId);
+    
+    // The new status will be the opposite of currentStatus
+    const newStatus = !currentStatus;
+    
+    // Update local state immediately for better UX
+    setMedicineAvailability(prev => ({
+      ...prev,
+      [medicineId]: newStatus
+    }));
+    
+    dispatch(updateMedicineAvailability({ id: medicineId, jwt }))
+      .then(() => {
+        setSnackbar({
+          open: true,
+          message: `${medicineName} is now ${newStatus ? 'Available' : 'Unavailable'}!`,
+          severity: "success"
+        });
+        // Refresh the list to show updated availability
+        dispatch(getMenuItemsByPharmacyId({
+          pharmacyId: pharmacy.usersPharmacy.id,
+          jwt,
+          vegetarian: false,
+          seasonal: false,
+          medicineCategory: ""
+        }));
+      })
+      .catch(() => {
+        // Revert the local state if API call fails
+        setMedicineAvailability(prev => ({
+          ...prev,
+          [medicineId]: currentStatus
+        }));
+        
+        setSnackbar({
+          open: true,
+          message: "Failed to update availability",
+          severity: "error"
+        });
+      })
+      .finally(() => {
+        setUpdatingId(null);
       });
   };
 
@@ -118,13 +180,15 @@ export const MenuTable = () => {
                 <TableCell align="right" sx={{ fontWeight: 600 }}>Title</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>Ingredients</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>Price</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 600 }}>Status</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>Availability</TableCell>
                 <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {menu.menuItems?.map((item) => {
+                              {menu.menuItems?.map((item) => {
                 const stockStatus = getStockStatus(item.dossage);
+                const isAvailable = medicineAvailability[item.id];
                 
                 return (
                   <TableRow
@@ -177,6 +241,30 @@ export const MenuTable = () => {
                           borderRadius: '4px'
                         }}
                       />
+                    </TableCell>
+                    <TableCell align="right">
+                      <Button
+                        variant="contained"
+                        color={isAvailable ? "success" : "error"}
+                        onClick={() => handleToggleAvailability(item.id, item.name, isAvailable)}
+                        disabled={updatingId === item.id}
+                        startIcon={
+                          updatingId === item.id ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : isAvailable ? (
+                            <ToggleOnIcon />
+                          ) : (
+                            <ToggleOffIcon />
+                          )
+                        }
+                        sx={{
+                          fontWeight: 600,
+                          textTransform: 'none',
+                          minWidth: '130px'
+                        }}
+                      >
+                        {updatingId === item.id ? "Updating..." : isAvailable ? "Available" : "Unavailable"}
+                      </Button>
                     </TableCell>
                     <TableCell align="right">
                       <IconButton 

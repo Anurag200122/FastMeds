@@ -26,7 +26,6 @@ const AdminSideBar = () => {
     { title: "Medicine", icon: <ShopTwoIcon />, path: "/admin/pharmacy/menu" },
     { title: "MedicineCategory", icon: <CategoryIcon />, path: "/admin/pharmacy/category" },
     { title: "Dossage", icon: <VaccinesIcon />, path: "/admin/pharmacy/dossage" },
-    { title: "Event", icon: <EventIcon />, path: "/admin/pharmacy/event" },
     { title: "Details", icon: <AdminPanelSettingsIcon />, path: "/admin/pharmacy/details" },
     { 
       title: "Logout", 

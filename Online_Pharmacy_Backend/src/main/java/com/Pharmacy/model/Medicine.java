@@ -41,7 +41,7 @@ public class Medicine {
 	private List<String> images;
 	
 	
-	private boolean available;
+	private boolean available=true;
 	
 	@ManyToOne
 	private Pharmacy pharmacy;

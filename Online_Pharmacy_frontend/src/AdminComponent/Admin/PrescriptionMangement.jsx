@@ -46,7 +46,7 @@ const PrescriptionManagement = ({ orderId }) => {
   const { prescription, loading, error } = useSelector(state => state.prescription);
   
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+ // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [notes, setNotes] = useState('');
   const [snackbar, setSnackbar] = useState({
@@ -88,33 +88,33 @@ const PrescriptionManagement = ({ orderId }) => {
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      await dispatch(deletePrescription({ 
-        prescriptionId: prescription.id, 
-        jwt 
-      }));
+  // const handleDelete = async () => {
+  //   try {
+  //     await dispatch(deletePrescription({ 
+  //       prescriptionId: prescription.id, 
+  //       jwt 
+  //     }));
       
-      setSnackbar({
-        open: true,
-        message: 'Prescription deleted successfully',
-        severity: 'success'
-      });
-      setDeleteDialogOpen(false);
-      fetchPrescription();
-    } catch (error) {
-      setSnackbar({
-        open: true,
-        message: error.message || 'Failed to delete prescription',
-        severity: 'error'
-      });
-    }
-  };
+  //     setSnackbar({
+  //       open: true,
+  //       message: 'Prescription deleted successfully',
+  //       severity: 'success'
+  //     });
+  //     setDeleteDialogOpen(false);
+  //     fetchPrescription();
+  //   } catch (error) {
+  //     setSnackbar({
+  //       open: true,
+  //       message: error.message || 'Failed to delete prescription',
+  //       severity: 'error'
+  //     });
+  //   }
+  // };
 
-  const handleDownload = () => {
-    // In a real app, this would download the file from your backend
-    window.open(prescription.filePath, '_blank');
-  };
+  // const handleDownload = () => {
+  //   // In a real app, this would download the file from your backend
+  //   window.open(prescription.filePath, '_blank');
+  // };
 
   const getStatusChip = () => {
     switch(prescription?.status) {
@@ -212,21 +212,21 @@ const PrescriptionManagement = ({ orderId }) => {
           </TableContainer>
 
           <Box mt={3} display="flex" gap={2}>
-            <Button
+            {/* <Button
               variant="contained"
               startIcon={<Download />}
               onClick={handleDownload}
             >
               Download Prescription
-            </Button>
-            <Button
+            </Button> */}
+            {/* <Button
               variant="outlined"
               color="error"
               startIcon={<Delete />}
               onClick={() => setDeleteDialogOpen(true)}
             >
               Delete Prescription
-            </Button>
+            </Button> */}
           </Box>
         </CardContent>
       </Card>
@@ -281,7 +281,7 @@ const PrescriptionManagement = ({ orderId }) => {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+      {/* <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Confirm Delete</DialogTitle>
         <DialogContent>
           <Typography>
@@ -298,7 +298,7 @@ const PrescriptionManagement = ({ orderId }) => {
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
 
       <Snackbar
         open={snackbar.open}

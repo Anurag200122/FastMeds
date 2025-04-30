@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllPharmacyAction } from '../State/Pharmacy/Action';
 import { motion } from 'framer-motion';
@@ -12,8 +12,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useNavigate } from 'react-router-dom';
 
-
-// Styled components for the modernized UI
+// Styled components
 const StyledBanner = styled(Box)(({ theme }) => ({
   height: '90vh',
   width: '100%',
@@ -26,7 +25,6 @@ const StyledBanner = styled(Box)(({ theme }) => ({
   backgroundPosition: 'center',
   color: 'white',
   overflow: 'hidden',
-  
   '&::before': {
     content: '""',
     position: 'absolute',
@@ -56,7 +54,6 @@ const SectionTitle = styled(Typography)(({ theme }) => ({
   position: 'relative',
   display: 'inline-block',
   marginBottom: theme.spacing(6),
-  
   '&::after': {
     content: '""',
     position: 'absolute',
@@ -82,7 +79,6 @@ const FeatureBox = styled(Box)(({ theme }) => ({
   backdropFilter: 'blur(10px)',
   border: '1px solid rgba(255, 255, 255, 0.3)',
   height: '100%',
-  
   '&:hover': {
     transform: 'translateY(-10px)',
     boxShadow: '0 15px 35px rgba(0, 0, 0, 0.15)'
@@ -98,19 +94,17 @@ const ActionButton = styled(Button)(({ theme }) => ({
   boxShadow: '0 10px 20px rgba(37, 99, 235, 0.15)',
   transition: 'all 0.3s ease',
   background: 'linear-gradient(90deg, #0d9488, #0891b2)',
-  
   '&:hover': {
     boxShadow: '0 15px 25px rgba(37, 99, 235, 0.25)',
     transform: 'translateY(-3px)',
     background: 'linear-gradient(90deg, #0d9488, #0891b2)'
   },
-  
   '&:active': {
     transform: 'translateY(0)'
   }
 }));
 
-// Framer Motion variants
+// Animation variants
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
@@ -129,38 +123,51 @@ const staggerContainer = {
 
 const Home = () => {
   const dispatch = useDispatch();
-  const jwt = localStorage.getItem("jwt");
-  const { pharmacy } = useSelector(store => store);
+  const { pharmacy, auth } = useSelector(store => store);
   const theme = useTheme();
+  const navigate = useNavigate();
+  const pharmaciesRef = useRef(null);
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  const isAuthenticated = auth.user !== null && auth.user !== undefined;
 
   useEffect(() => {
-    dispatch(getAllPharmacyAction(jwt));
-  }, [dispatch, jwt]);
+    if (isAuthenticated && initialLoad) {
+      dispatch(getAllPharmacyAction(localStorage.getItem("jwt")));
+      setInitialLoad(false);
+    }
+    if (isAuthenticated) {
+      dispatch(getAllPharmacyAction(localStorage.getItem("jwt")));
+    }
+  }, [dispatch, isAuthenticated, initialLoad]);
 
+  const scrollToPharmacies = () => {
+    pharmaciesRef.current?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
 
-const navigate= useNavigate();
-  // Features data
   const features = [
     {
       icon: <InventoryIcon sx={{ fontSize: 48, color: '#0d9488' }} />,
       title: "Wide Selection",
-      description: "Browse thousands of medications and healthcare products from trusted brands and manufacturers."
+      description: "Browse thousands of medications and healthcare products from trusted brands."
     },
     {
       icon: <LocalShippingIcon sx={{ fontSize: 48, color: '#0d9488' }} />,
-      title: "Fast Delivery",
-      description: "Get your essential medications delivered right to your doorstep within hours."
+      title: "Fast Pickup",
+      description: "Get your medications ready for pickup at your nearest pharmacy within hours."
     },
     {
       icon: <SupportAgentIcon sx={{ fontSize: 48, color: '#0d9488' }} />,
       title: "Expert Support",
-      description: "Our licensed pharmacists are available 24/7 to answer your questions and provide guidance."
+      description: "Our licensed pharmacists are available to answer your questions."
     }
   ];
 
   return (
     <Box sx={{ overflow: 'hidden' }}>
-      {/* Hero Banner Section */}
       <StyledBanner>
         <BannerContent>
           <motion.div
@@ -199,7 +206,7 @@ const navigate= useNavigate();
                 maxWidth: '700px'
               }}
             >
-              Your Trusted Pharmacy. Fast, Reliable & Delivered to Your Door.
+              Your Trusted Pharmacy. Fast, Reliable & Ready for Pickup.
             </Typography>
           </motion.div>
           
@@ -213,6 +220,7 @@ const navigate= useNavigate();
               color="primary" 
               size="large"
               disableElevation
+              onClick={scrollToPharmacies}
             >
               Shop Now
             </ActionButton>
@@ -220,50 +228,21 @@ const navigate= useNavigate();
         </BannerContent>
       </StyledBanner>
 
-      {/* Features Section */}
-      <Box sx={{ 
-        py: 10, 
-        px: { xs: 2, sm: 4 },
-        backgroundColor: 'rgba(237, 242, 247, 0.7)',
-      }}>
+      <Box sx={{ py: 10, px: { xs: 2, sm: 4 }, backgroundColor: 'rgba(237, 242, 247, 0.7)' }}>
         <Container maxWidth="lg">
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.3 }}
-          >
-            <SectionTitle 
-              variant="h2" 
-              align="center"
-              sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}
-            >
+          <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <SectionTitle variant="h2" align="center" sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}>
               Why Choose FastMeds?
             </SectionTitle>
           </motion.div>
           
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-          >
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-              gap: 4
-            }}>
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
               {features.map((feature, index) => (
-                <motion.div 
-                  key={index} 
-                  variants={fadeInUp}
-                >
+                <motion.div key={index} variants={fadeInUp}>
                   <FeatureBox>
                     {feature.icon}
-                    <Typography 
-                      variant="h5" 
-                      sx={{ fontWeight: 600, my: 2 }}
-                    >
+                    <Typography variant="h5" sx={{ fontWeight: 600, my: 2 }}>
                       {feature.title}
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
@@ -277,69 +256,29 @@ const navigate= useNavigate();
         </Container>
       </Box>
 
-      {/* Categories and Medicines Carousel Section */}
-      <Box sx={{ 
-        py: 10, 
-        px: { xs: 2, sm: 4 },
-        background: 'linear-gradient(180deg, rgba(237, 242, 247, 0.7) 0%, rgba(255, 255, 255, 1) 100%)'
-      }}>
+      <Box sx={{ py: 10, px: { xs: 2, sm: 4 }, background: 'linear-gradient(180deg, rgba(237, 242, 247, 0.7) 0%, #fff 100%)' }}>
         <Container maxWidth="xl">
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
+          <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <MultiItemCarousel items={topCategories} title="Shop by Category" />
           </motion.div>
-          
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
+          <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <MultiItemCarousel items={topMedicines} title="Popular Medicines" />
           </motion.div>
         </Container>
       </Box>
 
-      {/* Pharmacies Section */}
-      <Box sx={{ py: 10, px: { xs: 2, sm: 4 }, backgroundColor: '#f8fafc' }}>
+      <Box ref={pharmaciesRef} sx={{ py: 10, px: { xs: 2, sm: 4 }, backgroundColor: '#f8fafc' }}>
         <Container maxWidth="xl">
-          <motion.div
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
-            <SectionTitle 
-              variant="h2" 
-              align="center"
-              sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}
-            >
-              Handpicked Pharmacies Just for You
+          <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <SectionTitle variant="h2" align="center" sx={{ fontSize: { xs: '2rem', md: '2.5rem' } }}>
+              Handpicked Pharmacies
             </SectionTitle>
           </motion.div>
           
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-          >
-            <Box sx={{ 
-              display: 'flex', 
-              flexWrap: 'wrap', 
-              justifyContent: 'center',
-              gap: 4
-            }}>
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 4 }}>
               {pharmacy.pharmacies?.map((item, index) => (
-                <motion.div 
-                  key={index} 
-                  variants={fadeInUp}
-                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                >
+                <motion.div key={index} variants={fadeInUp} whileHover={{ y: -10 }}>
                   <PharmacyCard item={item} />
                 </motion.div>
               ))}
@@ -348,15 +287,7 @@ const navigate= useNavigate();
         </Container>
       </Box>
     
-      
-      
-      {/* Call to Action Section */}
-      <Box sx={{ 
-        py: 10, 
-        background: 'linear-gradient(135deg, #0d9488 0%, #155e75 100%)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
+      <Box sx={{ py: 10, background: 'linear-gradient(135deg, #0d9488 0%, #155e75 100%)', position: 'relative' }}>
         <Box sx={{
           position: 'absolute',
           top: 0,
@@ -364,108 +295,49 @@ const navigate= useNavigate();
           right: 0,
           bottom: 0,
           opacity: 0.1,
-          backgroundImage: 'url("https://images.pexels.com/photos/161449/medical-tablets-pills-drug-161449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1")',
+          backgroundImage: 'url("https://images.pexels.com/photos/161449/medical-tablets-pills-drug-161449.jpeg")',
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
           filter: 'blur(8px)'
         }} />
         
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2 }}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <Box sx={{
-              textAlign: 'center',
-              color: 'white'
-            }}>
-              <Typography 
-                variant="h3" 
-                sx={{ 
-                  fontWeight: 700, 
-                  mb: 2,
-                  fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' }
-                }}
-              >
-                Ready to experience better pharmacy service?
+          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 0.6 }}>
+            <Box sx={{ textAlign: 'center', color: 'white' }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '1.75rem', md: '2.25rem' } }}>
+                {isAuthenticated ? "Thank you for choosing FastMeds!" : "Ready to experience better pharmacy service?"}
               </Typography>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 400, 
-                  mb: 4,
-                  opacity: 0.9,
-                  maxWidth: '700px',
-                  mx: 'auto',
-                  fontSize: { xs: '1rem', sm: '1.1rem' }
-                }}
-              >
-                Join thousands of satisfied customers who trust FastMeds for all their medication needs. Sign up today and get 20% off your first order!
+              <Typography variant="h6" sx={{ fontWeight: 400, mb: 4, opacity: 0.9, maxWidth: '700px', mx: 'auto' }}>
+                {isAuthenticated ? 
+                  "We appreciate your trust in our services." : 
+                  "Join thousands who trust FastMeds for their medication needs."}
               </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+              {!isAuthenticated && (
+                <Button 
+                  onClick={() => navigate("/account/register")}
+                  variant="contained" 
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#0d9488',
+                    borderRadius: '50px',
+                    px: 4,
+                    py: 1.5,
+                    fontWeight: 600,
+                    '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.9)' }
+                  }}
                 >
-                  <Button onClick={()=>navigate("/account/register")}
-                    variant="contained" 
-                    sx={{
-                      bgcolor: 'white',
-                      color: '#0d9488',
-                      borderRadius: '50px',
-                      px: 4,
-                      py: 1.5,
-                      fontWeight: 600,
-                      '&:hover': {
-                        bgcolor: 'rgba(255, 255, 255, 0.9)',
-                      }
-                    }}
-                  >
-                    Sign Up Now
-                  </Button>
-                </motion.div>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  
-                </motion.div>
-              </Box>
+                  Sign Up Now
+                </Button>
+              )}
             </Box>
           </motion.div>
         </Container>
       </Box>
-      
-      {/* Footer Section */}
-      <Box sx={{ 
-        bgcolor: '#0f172a', 
-        color: 'white',
-        py: 6,
-        px: { xs: 2, sm: 4 }
-      }}>
+
+      <Box sx={{ bgcolor: '#0f172a', color: 'white', py: 6 }}>
         <Container maxWidth="lg">
-          <Box sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', md: 'row' },
-            justifyContent: 'space-between',
-            alignItems: { xs: 'center', md: 'flex-start' },
-            textAlign: { xs: 'center', md: 'left' },
-            gap: 4
-          }}>
-            </Box>
-          
-          <Box sx={{
-            mt: 6,
-            pt: 3,
-            borderTop: '1px solid rgba(255,255,255,0.1)',
-            textAlign: 'center'
-          }}>
-            <Typography variant="body2" sx={{ opacity: 0.6 }}>
-              © {new Date().getFullYear()} FastMeds. All rights reserved.
-            </Typography>
-          </Box>
+          <Typography variant="body2" sx={{ textAlign: 'center', opacity: 0.6 }}>
+            © {new Date().getFullYear()} FastMeds. All rights reserved.
+          </Typography>
         </Container>
       </Box>
     </Box>

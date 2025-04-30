@@ -26,7 +26,6 @@ import {
   clearSearch
 } from '../State/Search/Action';
 import PharmacyCard from '../Pharmacy/PharmacyCard';
-import MenuCard from '../Pharmacy/MenuCard';
 
 const SearchResultsPage = () => {
   const dispatch = useDispatch();
@@ -77,8 +76,14 @@ const SearchResultsPage = () => {
     }
   }, [dispatch, query, type, medicine, category]);
 
+  const handlePharmacyClick = (pharmacy) => {
+    navigate(`/pharmacy/${pharmacy.address?.city}/${pharmacy.name}/${pharmacy.id}`);
+  };
+
   const handleMedicineClick = (medicineItem) => {
-    navigate(`/search?medicine=${encodeURIComponent(medicineItem.name)}`);
+    if (medicineItem.pharmacy) {
+      navigate(`/pharmacy/${medicineItem.pharmacy.address?.city}/${medicineItem.pharmacy.name}/${medicineItem.pharmacy.id}`);
+    }
   };
 
   const renderPharmacyResults = (items) => {
@@ -92,9 +97,13 @@ const SearchResultsPage = () => {
 
     return (
       <Grid container spacing={3} sx={{ mt: 2 }}>
-        {items.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={`pharmacy-${item.id}`}>
-            <PharmacyCard item={item} />
+        {items.map((pharmacy) => (
+          <Grid item xs={12} sm={6} md={4} key={`pharmacy-${pharmacy.id}`}>
+            <PharmacyCard 
+              item={pharmacy} 
+              showStatus={true}
+              onClick={() => handlePharmacyClick(pharmacy)}
+            />
           </Grid>
         ))}
       </Grid>
@@ -112,12 +121,101 @@ const SearchResultsPage = () => {
 
     return (
       <Grid container spacing={3} sx={{ mt: 2 }}>
-        {items.map((item) => (
-          <Grid item xs={12} key={`medicine-${item.id}`}>
-            <MenuCard 
-              item={item} 
-              onClick={() => handleMedicineClick(item)}
-            />
+        {items.map((medicine) => (
+          <Grid item xs={12} key={`medicine-${medicine.id}`}>
+            <Box 
+              sx={{ 
+                p: 3,
+                border: '1px solid #e0e0e0',
+                borderRadius: '8px',
+                display: 'flex',
+                gap: 3,
+                cursor: 'pointer',
+                '&:hover': {
+                  boxShadow: '0px 4px 12px rgba(0,0,0,0.1)',
+                  borderColor: 'primary.main'
+                }
+              }}
+              onClick={() => handleMedicineClick(medicine)}
+            >
+              {/* Medicine Image */}
+              <Box sx={{ 
+                width: '120px', 
+                height: '120px',
+                flexShrink: 0,
+                borderRadius: '4px',
+                overflow: 'hidden'
+              }}>
+                <img 
+                  src={medicine.images[0]} 
+                  alt={medicine.name}
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    objectFit: 'cover'
+                  }}
+                />
+              </Box>
+              
+              {/* Medicine Details */}
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                  {medicine.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                  {medicine.description}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
+                  <Chip 
+                    label={medicine.category} 
+                    size="small" 
+                    color="primary"
+                    variant="outlined"
+                  />
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    ${medicine.price}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              {/* Pharmacy Info */}
+              <Box sx={{ 
+                width: '200px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end'
+              }}>
+                <Box sx={{ textAlign: 'right' }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
+                    Available at:
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+                    <Typography variant="body2" sx={{ mr: 1 }}>
+                      {medicine.pharmacy.name}
+                    </Typography>
+                    <Box sx={{ 
+                      width: '40px', 
+                      height: '40px',
+                      borderRadius: '4px',
+                      overflow: 'hidden'
+                    }}>
+                      <img 
+                        src={medicine.pharmacy.images[0]} 
+                        alt={medicine.pharmacy.name}
+                        style={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          objectFit: 'cover'
+                        }}
+                      />
+                    </Box>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                    {medicine.pharmacy.address.city}, {medicine.pharmacy.address.stateProvince}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
           </Grid>
         ))}
       </Grid>
@@ -126,8 +224,8 @@ const SearchResultsPage = () => {
 
   if (loading || pharmaciesLoading || medicinesLoading || filteredLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-        <CircularProgress />
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+        <CircularProgress size={60} />
       </Box>
     );
   }
@@ -136,7 +234,7 @@ const SearchResultsPage = () => {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <Typography color="error">
-          {error?.message || pharmaciesError || medicinesError || filteredError}
+          {error?.message || pharmaciesError?.message || medicinesError?.message || filteredError?.message || 'An error occurred'}
         </Typography>
       </Box>
     );
@@ -211,7 +309,12 @@ const SearchResultsPage = () => {
 
       {hasMedicines && (
         <>
-          <Typography variant="h5" sx={{ mb: 2, mt: hasPharmacies ? 4 : 0, display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h5" sx={{ 
+            mb: 2, 
+            mt: hasPharmacies ? 4 : 0, 
+            display: 'flex', 
+            alignItems: 'center' 
+          }}>
             <MedicineIcon color="secondary" sx={{ mr: 1 }} />
             Medicines
           </Typography>
@@ -220,8 +323,15 @@ const SearchResultsPage = () => {
       )}
 
       {!hasPharmacies && !hasMedicines && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <Typography variant="body1">No results found</Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center',
+          height: '300px'
+        }}>
+          <Typography variant="h6" color="text.secondary">
+            No results found for your search
+          </Typography>
         </Box>
       )}
     </Box>

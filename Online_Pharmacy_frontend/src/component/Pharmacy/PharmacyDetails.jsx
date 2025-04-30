@@ -115,6 +115,9 @@ const PharmacyDetails = () => {
            "https://www.modernretail.co/wp-content/uploads/sites/5/2019/06/cvs.jpg?w=1278&h=600&crop=1"]
         : [];
 
+    // Filter available medicines
+    const availableMedicines = menu.menuItems?.filter(item => item.available) || [];
+
     return (
         <motion.div 
           initial="hidden"
@@ -281,10 +284,10 @@ const PharmacyDetails = () => {
                                             )}
                                         </Typography>
                                         
-                                        {menu.menuItems && menu.menuItems.length === 0 ? (
+                                        {availableMedicines.length === 0 ? (
                                             <Paper className="p-12 text-center rounded-xl">
                                                 <Typography variant="h6" className="text-gray-500">
-                                                    No medicines found matching your filters
+                                                    No available medicines found matching your filters
                                                 </Typography>
                                                 <Button 
                                                     variant="outlined" 
@@ -299,7 +302,7 @@ const PharmacyDetails = () => {
                                             </Paper>
                                         ) : (
                                             <Grid container spacing={3}>
-                                                {menu.menuItems?.map((item, index) => (
+                                                {availableMedicines.map((item, index) => (
                                                     <Grid item xs={12} sm={6} md={4} key={index}>
                                                         <motion.div
                                                             variants={fadeInUp}

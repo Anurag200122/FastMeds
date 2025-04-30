@@ -1,4 +1,20 @@
-import * as actionTypes from "./ActionType.js"
+import {
+    CREATE_MENU_ITEM_FAILURE,
+    CREATE_MENU_ITEM_REQUEST,
+    CREATE_MENU_ITEM_SUCCESS,
+    GET_MENU_ITEMS_BY_PHARMACY_ID_FAILURE,
+    GET_MENU_ITEMS_BY_PHARMACY_ID_REQUEST,
+    GET_MENU_ITEMS_BY_PHARMACY_ID_SUCCESS,
+    SEARCH_MENU_ITEM_FAILURE,
+    SEARCH_MENU_ITEM_REQUEST,
+    SEARCH_MENU_ITEM_SUCCESS,
+    UPDATE_MENU_ITEM_AVAILABILITY_FAILURE,
+    UPDATE_MENU_ITEM_AVAILABILITY_REQUEST,
+    UPDATE_MENU_ITEM_AVAILABILITY_SUCCESS,
+    DELETE_MENU_ITEM_FAILURE,
+    DELETE_MENU_ITEM_SUCCESS,
+    DELETE_MENU_ITEM_REQUEST
+  } from "./ActionType.js";
 
 const initialState={
     menuItems:[],
@@ -10,10 +26,10 @@ const initialState={
 
 export const menuItemReducer=(state=initialState,action)=>{
     switch(action.type){
-        case actionTypes.CREATE_MENU_ITEM_REQUEST:
-        case actionTypes.DELETE_MENU_ITEM_REQUEST:
-        case actionTypes.SEARCH_MENU_ITEM_REQUEST:
-        case actionTypes.UPDATE_MENU_ITEM_AVAILABILITY_REQUEST:
+        case CREATE_MENU_ITEM_REQUEST:
+        case DELETE_MENU_ITEM_REQUEST:
+        case SEARCH_MENU_ITEM_REQUEST:
+        case UPDATE_MENU_ITEM_AVAILABILITY_REQUEST:
             
             return{
                 ...state,
@@ -21,7 +37,7 @@ export const menuItemReducer=(state=initialState,action)=>{
                 error:null,
                 message:null,
             };
-        case actionTypes.GET_MENU_ITEMS_BY_PHARMACY_ID_REQUEST:
+        case GET_MENU_ITEMS_BY_PHARMACY_ID_REQUEST:
             console.log("Reducer: Handling GET_MENU_ITEMS_BY_PHARMACY_ID_REQUEST");
             return{
                 ...state,
@@ -29,7 +45,7 @@ export const menuItemReducer=(state=initialState,action)=>{
                 error:null,
                 message:null,
             }
-        case actionTypes.CREATE_MENU_ITEM_SUCCESS:
+        case CREATE_MENU_ITEM_SUCCESS:
             return{
                 ...state,
                 loading:false,
@@ -37,14 +53,14 @@ export const menuItemReducer=(state=initialState,action)=>{
                 message:"Medicine created Successfully",
 
             };
-        case actionTypes.GET_MENU_ITEMS_BY_PHARMACY_ID_SUCCESS:
+        case GET_MENU_ITEMS_BY_PHARMACY_ID_SUCCESS:
             console.log("Reducer: Handling GET_MENU_ITEMS_BY_PHARMACY_ID_SUCCESS", action.payload);
             return{
                 ...state,
                 loading:false,
                 menuItems: action.payload,
             };
-        case actionTypes.DELETE_MENU_ITEM_SUCCESS:
+        case DELETE_MENU_ITEM_SUCCESS:
             return{
                 ...state,
                 loading:false,
@@ -52,7 +68,7 @@ export const menuItemReducer=(state=initialState,action)=>{
                     (menuItem)=>menuItem.id!==action.payload
                 ),
             };
-        case actionTypes.UPDATE_MENU_ITEM_AVAILABILITY_SUCCESS:
+        case UPDATE_MENU_ITEM_AVAILABILITY_SUCCESS:
             return{
                 ...state,
                 loading:false,
@@ -61,17 +77,17 @@ export const menuItemReducer=(state=initialState,action)=>{
                     action.payload:menuItem
                 ),
             };
-        case actionTypes.SEARCH_MENU_ITEM_SUCCESS:
+        case SEARCH_MENU_ITEM_SUCCESS:
             return{
                 ...state,
                 loading:false,
                 search:action.payload,
             };
-        case actionTypes.CREATE_MENU_ITEM_FAILURE:
-        case actionTypes.GET_MENU_ITEMS_BY_PHARMACY_ID_FAILURE:
-        case actionTypes.DELETE_MENU_ITEM_FAILURE:
-        case actionTypes.SEARCH_MENU_ITEM_FAILURE:
-        case actionTypes.UPDATE_MENU_ITEM_AVAILABILITY_FAILURE:
+        case CREATE_MENU_ITEM_FAILURE:
+        case GET_MENU_ITEMS_BY_PHARMACY_ID_FAILURE:
+        case DELETE_MENU_ITEM_FAILURE:
+        case SEARCH_MENU_ITEM_FAILURE:
+        case UPDATE_MENU_ITEM_AVAILABILITY_FAILURE:
             return{
                 ...state,
                 loading: false,

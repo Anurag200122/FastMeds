@@ -20,7 +20,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const PharmacyCard = ({ item, isFavoriteView = false }) => {
+const PharmacyCard = ({ item, showStatus = true }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const jwt = localStorage.getItem("jwt");
@@ -36,25 +36,22 @@ const PharmacyCard = ({ item, isFavoriteView = false }) => {
         dispatch(addToFavorites({ 
             pharmacyId: item.id, 
             jwt,
-            ...item,
-            open: isFavoriteView ? false : item.open
+            ...item
         }));
     };
 
     const handleNavigateToPharmacy = () => {
-        if(!isFavoriteView && item.open) {
-            navigate(`/pharmacy/${item.address?.city}/${item.name}/${item.id}`);
-        }
+        navigate(`/pharmacy/${item.address?.city}/${item.name}/${item.id}`);
     };
 
     return (
         <StyledCard 
-            className={`${(!isFavoriteView && item.open) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            className="cursor-pointer"
             onClick={handleNavigateToPharmacy}
             elevation={0}
         >
             <div className="relative">
-                {!isFavoriteView && (
+                {showStatus && (
                     <Chip
                         size="small"
                         sx={{
@@ -77,7 +74,7 @@ const PharmacyCard = ({ item, isFavoriteView = false }) => {
                             e.target.src = '/default-pharmacy.jpg';
                         }}
                     />
-                    {(!isFavoriteView && !item.open) && (
+                    {showStatus && !item.open && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-t-[12px]">
                             <Typography variant="body1" sx={{ color: "white", fontWeight: 500 }}>
                                 Currently Closed
